@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN" "web-jsptaglibrary_1_2.dtd" >
+<taglib>
+    <tlib-version>0.1</tlib-version>
+    <jsp-version>2.0</jsp-version>
+    <short-name>pagination</short-name>
+	<uri>http://www.catspaw.org/cherubim/tags/pagination</uri>
+	
+    <tag>
+        <name>paginate</name>
+        <tag-class>org.catspaw.cherubim.pagination.PaginationTag</tag-class>
+        <attribute>
+            <name>page</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>org.catspaw.cherubim.pagination.Page</type>
+        </attribute>
+        <attribute>
+            <name>action</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>method</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+</taglib>

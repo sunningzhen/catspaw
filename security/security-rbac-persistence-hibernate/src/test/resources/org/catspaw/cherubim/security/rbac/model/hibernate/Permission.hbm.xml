@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="org.catspaw.cherubim.security.rbac.model.PermissionModel"
+		entity-name="Permission" table="rbac_permission">
+		<id name="id" type="string" length="36" />
+		<property name="code" type="string" />
+		<property name="domainId" type="string" />
+		<property name="domainCode" type="string" />
+		<property name="actionId" type="string" />
+		<property name="actionCode" type="string" />
+		<property name="instance" type="string" />
+	</class>
+	<query name="findPermissionsByRoleCode">
+		<![CDATA[
+		select elements(r.permissions) from Role r where r.code = ?
+		]]>
+	</query>
+</hibernate-mapping>

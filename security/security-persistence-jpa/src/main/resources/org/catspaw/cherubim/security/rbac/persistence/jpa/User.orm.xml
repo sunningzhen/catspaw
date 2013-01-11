@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+	version="1.0">
+	<named-query name="findUserByUsername">
+		<query>
+			select u from User u where u.username=?
+		</query>
+	</named-query>
+	<mapped-superclass class="org.catspaw.cherubim.security.rbac.persistence.model.UserModel">
+		<attributes>
+			<id name="id" />
+			<basic name="username" />
+			<basic name="password" />
+		</attributes>
+	</mapped-superclass>
+	<entity name="User"
+		class="org.catspaw.cherubim.security.rbac.persistence.model.jpa.UserModelJpa">
+		<table name="rbac_user" />
+		<attributes>
+			<many-to-many name="roles"
+				target-entity="org.catspaw.cherubim.security.rbac.persistence.model.jpa.RoleModelJpa">
+				<join-table name="rbac_user_role">
+					<join-column name="user_id" />
+					<inverse-join-column name="role_id" />
+				</join-table>
+			</many-to-many>
+		</attributes>
+	</entity>
+</entity-mappings>

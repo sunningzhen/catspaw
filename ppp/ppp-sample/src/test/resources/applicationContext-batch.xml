@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.1.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd"
+	default-lazy-init="true">
+	
+	<!--   JOB REPOSITORY - WE USE IN-MEMORY REPOSITORY FOR OUR EXAMPLE -->
+	<bean id="jobRepository"
+		class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+	
+	<!-- batch config -->
+	<bean id="jobLauncher"
+		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<property name="jobRepository" ref="jobRepository" />
+	</bean>
+
+	<!--  FINALLY OUR JOB DEFINITION. THIS IS A 1 STEP JOB -->
+	<batch:job id="attentionJob">
+		<batch:step id="step1">
+			<batch:tasklet>
+				<batch:chunk reader="csvReader" writer="attentionWriter" commit-interval="5000" />
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+	 
+	<!--  READER 
+	<bean id="attentionReader"
+		class="org.springframework.batch.item.database.JdbcCursorItemReader">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sql" value="select * from attention" /> 
+		<property name="rowMapper">
+			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
+		</property>
+	</bean>
+	-->
+	<bean id="csvReader" class="org.catspaw.ppp.engine.spring.batch.FlatFileStreamItemReader">
+		<property name="resource" value="file:///z:/attention.csv"/>
+        <property name="lineMapper">
+            <bean
+                class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+                <property name="lineTokenizer" ref="lineTokenizer"/>
+                <property name="fieldSetMapper">
+                    <bean class="org.catspaw.ppp.engine.spring.batch.PropertiesWrapperFieldSetMapper" />
+                </property>
+            </bean>
+        </property>
+	</bean>
+    <!-- lineTokenizer -->
+    <bean id="lineTokenizer" class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+        <property name="delimiter" value=","/>
+        <property name="names">
+        	<list>
+        		<value>TRADING_DATE</value>
+        		<value>SECUCODE</value>
+        		<value>STALL</value>
+        		<value>BUSI_CODE</value>
+        		<value>VOLUME</value>
+        		<value>AMOUNT</value>
+        		<value>CUST_NUM</value>
+        	</list>
+        </property>
+    </bean>
+    
+    <bean id="attentionWriter" class="org.catspaw.ppp.sample.AttentionWriter">
+    	<property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+	 
+	<!-- Spring Batch Job同一个job instance，成功执行后是不允许重新执行的【失败后是否允许重跑，可通过配置Job的restartable参数来控制，默认是true】，如果需要重新执行，可以变通处理，
+		添加一个JobParameters构建类,以当前时间作为参数，保证其他参数相同的情况下却是不同的job instance -->
+	<bean id="jobParameterBulider" class="org.springframework.batch.core.JobParametersBuilder" />
+	
+</beans>

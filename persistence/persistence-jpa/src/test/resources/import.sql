@@ -1,0 +1,1 @@
+insert into mock_person(id, name, age) values('1', 'a', 1)

@@ -1,0 +1,48 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/jquery/themes/redmond/jquery.ui.all.css">
+	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/jquery/jquery.js"></script>
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/flexigrid/css/flexigrid.css"/>   
+	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/flexigrid/js/flexigrid.js"></script>
+	<script type="text/javascript">
+	$(function(){
+		loadGrid();
+	});
+	function loadGrid(){
+		$("#flex1").flexigrid({
+		    url: "module.cmd?method=listJson",
+		    dataType: 'json',
+		    colModel: [
+		    { display: 'id', name: 'id', width: 250, align: 'center' },
+		    { display: 'code', name: 'code', width: 180, align: 'left' },
+		    { display: 'name', name: 'name', width: 120, align: 'left' }
+		    ],
+		    sortname: "code",
+		    sortorder: "asc",
+		    usepager: true,
+		    striped: true,
+		    title: 'Modules',
+		    useRp: false,
+		    rp: 10,
+		    width: 'auto',
+		    height: 255,
+		    buttons:[
+     	    	{name: '添加版本', bclass: 'add', onpress : aaa}, 
+                {name: '删除版本', bclass: 'delete', onpress : aaa}, 
+                {separator: true} 
+			]
+		});
+	}
+	function aaa(){
+		alert('aaa');
+	}
+	</script>
+</head>
+<body>
+<table id="flex1"></table>
+</body>
+</html>

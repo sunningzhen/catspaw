@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
+	version="2.0">
+	<named-query name="findResourceSymbolsByUsername">
+		<query>
+			select distinct p.resourceSymbol from Permission p where p in(
+				select elements(r.permissions) from Role r where r in(
+					select elements(u.roles) from User u where u.username = ?
+				)
+			)
+		</query>
+	</named-query>
+	<named-query name="findResourceSymbolsByRoleCode">
+		<query>
+			select distinct p.resourceSymbol from Permission p where p in(
+				select elements(r.permissions) from Role r where r.code = ?
+			)
+		</query>
+	</named-query>
+	<named-query name="findResourceSymbolsByResourceString">
+		<query>
+			select r.symbol from Resource r where r.resourceString = ?
+		</query>
+	</named-query>
+	<named-query name="findAllResources">
+		<query>
+			select r from Resource r order by r.symbol
+		</query>
+	</named-query>
+	<entity name="Resource"
+		class="org.catspaw.cherubim.security.rbac.persistence.model.ResourceModel">
+		<table name="rbac_resource" />
+		<attributes>
+			<id name="id" />
+			<basic name="symbol" />
+			<basic name="resourceString">
+				<column name="resource_string" />
+			</basic>
+		</attributes>
+	</entity>
+</entity-mappings>

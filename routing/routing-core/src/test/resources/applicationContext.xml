@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.1.xsd
+		http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.1.xsd"
+	default-lazy-init="true">
+
+	<aop:config proxy-target-class="true">
+		<aop:pointcut id="servicePointcut"
+			expression="execution(* org.catspaw.cherubim..*Service.*(..))" />
+		<aop:advisor advice-ref="routeInterceptor" pointcut-ref="servicePointcut" />
+	</aop:config>
+	<bean id="routeInterceptor"
+		class="org.catspaw.cherubim.routing.query.aop.RoutingInterceptor">
+		<property name="routers">
+			<map>
+				<entry key="h2">
+					<bean class="org.catspaw.cherubim.routing.test.TestRouter" />
+				</entry>
+			</map>
+		</property>
+		<property name="routeProcessChain" ref="routeProcessChain" />
+		<property name="defaultRouteType" value="h2" />
+	</bean>
+	<bean id="routeProcessChain" class="org.apache.commons.chain.impl.ChainBase">
+		<constructor-arg>
+			<list>
+				<bean class="org.catspaw.cherubim.routing.query.chain.XaCommand" />
+				<bean class="org.catspaw.cherubim.routing.query.chain.KeyCommand" />
+				<bean class="org.catspaw.cherubim.routing.query.chain.KeysCommand" />
+				<bean class="org.catspaw.cherubim.routing.query.chain.DefaultValueCommand">
+					<property name="defaultType" value="h2" />
+				</bean>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="routeTestService" class="org.catspaw.cherubim.routing.test.HelloService" />
+
+</beans>

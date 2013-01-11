@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class
+		name="org.catspaw.cherubim.security.rbac.model.hibernate.UserModelHibernate"
+		entity-name="User" table="rbac_user">
+		<id name="id" type="string" length="36" />
+		<property name="username" type="string" />
+		<property name="password" type="string" />
+		<set name="roles" table="rbac_user_role">
+			<key column="user_id" />
+			<many-to-many column="role_id" entity-name="Role" />
+		</set>
+	</class>
+</hibernate-mapping>

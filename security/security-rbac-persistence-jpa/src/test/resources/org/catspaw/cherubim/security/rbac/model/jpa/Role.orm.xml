@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+	version="1.0">
+	<named-query name="findRolesByUserId">
+		<query>
+			<![CDATA[
+				select elements(u.roles) from User u where u.id = ?
+			]]>
+		</query>
+	</named-query>
+	<named-query name="findRolesByUsername">
+		<query>
+			<![CDATA[
+				select elements(u.roles) from User u where u.username = ?
+			]]>
+		</query>
+	</named-query>
+	<mapped-superclass class="org.catspaw.cherubim.security.rbac.model.RoleModel">
+		<attributes>
+			<id name="id" />
+			<basic name="code" />
+			<basic name="name" />
+		</attributes>
+	</mapped-superclass>
+	<entity name="Role"
+		class="org.catspaw.cherubim.security.rbac.model.jpa.RoleModelJpa">
+		<table name="rbac_role" />
+		<attributes>
+			<many-to-many name="permissions"
+				target-entity="org.catspaw.cherubim.security.rbac.model.PermissionModel">
+				<join-table name="rbac_role_permission">
+					<join-column name="role_id" />
+					<inverse-join-column name="permission_id" />
+				</join-table>
+			</many-to-many>
+		</attributes>
+	</entity>
+</entity-mappings>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="org.catspaw.cherubim.security.rbac.model.ResourceModel"
+		entity-name="Resource" table="rbac_resource">
+		<id name="id" type="string" length="36" />
+		<property name="code" type="string" />
+		<property name="resourceString" type="string" />
+	</class>
+</hibernate-mapping>

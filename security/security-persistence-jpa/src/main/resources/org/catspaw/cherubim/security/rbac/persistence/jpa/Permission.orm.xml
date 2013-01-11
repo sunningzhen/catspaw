@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+	version="1.0">
+	<named-query name="findPermissionsByRoleCode">
+		<query>
+			<![CDATA[
+				select elements(r.permissions) from Role r where r.code = ?
+			]]>
+		</query>
+	</named-query>
+	<entity name="Permission"
+		class="org.catspaw.cherubim.security.rbac.persistence.model.PermissionModel">
+		<table name="rbac_permission" />
+		<attributes>
+			<id name="id" />
+			<basic name="authority" />
+			<basic name="resourceId">
+				<column name="resource_id" />
+			</basic>
+			<basic name="resourceSymbol">
+				<column name="resource_symbol" />
+			</basic>
+			<basic name="operationId">
+				<column name="operation_id" />
+			</basic>
+			<basic name="operationSymbol">
+				<column name="operation_symbol" />
+			</basic>
+		</attributes>
+	</entity>
+</entity-mappings>

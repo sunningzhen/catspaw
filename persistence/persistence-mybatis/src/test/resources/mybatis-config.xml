@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<properties resource="persistence.properties" />
+	<settings>
+		<setting name="cacheEnabled" value="false" />
+		<setting name="lazyLoadingEnabled" value="false" />
+	</settings>
+
+	<typeAliases>
+		<typeAlias alias="Person" type="org.catspaw.cherubim.persistence.mock.model.Person" />
+	</typeAliases>
+
+	<plugins>
+		<plugin interceptor="cn.org.rapid_framework.mybatis.plugin.OffsetLimitInterceptor">
+			<property name="dialectClass"
+				value="cn.org.rapid_framework.jdbc.dialect.HSQLDialect" />
+		</plugin>
+	</plugins>
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="UNPOOLED">
+				<property name="driver" value="${persistence.connection.driver_class}" />
+				<property name="url" value="${persistence.connection.url}" />
+				<property name="username" value="${persistence.connection.username}" />
+				<property name="password" value="${persistence.connection.password}" />
+				<property name="defaultTransactionIsolationLevel" value="${persistence.connection.transaction_isolation_level}" />
+			</dataSource>
+		</environment>
+		<environment id="deployment">
+			<transactionManager type="MANAGED" />
+			<dataSource type="JNDI">
+				<property name="data_source" value="${persistence.datasource.jndi_name}" />
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="org/catspaw/cherubim/persistence/dao/mybatis/base.mapper.xml" />
+	</mappers>
+</configuration>
+

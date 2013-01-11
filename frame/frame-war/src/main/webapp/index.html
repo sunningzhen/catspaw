@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+<link rel="stylesheet" type="text/css" href="resources/css/reset.css" />
+<script type="text/javascript" src="resources/jquery/jquery-1.7.2.js"></script>
+<script type="text/javascript" src="resources/jquery-ui/js/jquery-ui-1.8.22.custom.js"></script>
+<script type="text/javascript" src="resources/jquery-ui/js/jquery.ui.tabs.js"></script>
+<link rel="stylesheet" type="text/css" href="resources/jquery-ui/themes/redmond/jquery-ui-1.8.22.custom.css" />
+<script type="text/javascript" src="resources/zTree/js/jquery.ztree.all-3.3.js"></script>
+<link rel="stylesheet" type="text/css" href="resources/zTree/css/zTreeStyle/zTreeStyle.css" />
+<style type="text/css">
+body #wrap div{
+	float: left;
+}
+body .treeDiv{
+	width: 15%;
+}
+body .contentDiv{
+	width: 75%;
+	height: 100%;
+}
+
+#ddpui_tabs { margin-top: 1em; }
+#content li .ui-icon-close { float: left; margin: 0.4em 0.2em 0 0; cursor: pointer; }
+</style>
+<script type="text/javascript">
+//var $ = jQuery.noConflict();
+function getContextPath() {
+	var pathName = document.location.pathname;
+	var index = pathName.substr(1).indexOf("/");
+	var result = pathName.substr(0,index+1);
+	return result;
+}
+$(function() {
+	var moduleCode = "SYSTEM";
+	var setting = {
+		async: {
+			enable: true,
+			url : "tree.cmd?method=getMenus",
+			autoParam : ["id=parentId"],
+			otherParam : {"moduleCode" : moduleCode},
+			dataFilter : function (treeId, parentNode, childNodes) {
+				$.each(childNodes, function(i, node){
+					if(node.url == null){
+						node.isParent = true;
+					} else {
+						var contextPath = getContextPath();
+						node.path = contextPath + node.url;
+						node.url = null;
+					}
+				});
+				return childNodes;
+			}
+		},
+		callback: {
+			onClick: function(event, treeId, treeNode){
+				if(treeNode.path != null){
+					var index = -1;
+					$("#content li").each(function(){
+						if($(this).data("code") == treeNode.code){
+							index = $(this).index();
+						}
+					});
+					if(index >= 0){
+						$("#content").tabs("select", index);
+						return;
+					}
+					$("#content").tabs("add", "empty.html", treeNode.name)
+								.tabs("select", $("#content li:last").index());
+					$("#content li:last").data("path", treeNode.path).data("code", treeNode.code);
+				}
+			}
+		}
+	};
+	$.fn.zTree.init($("#tree"), setting);
+	
+	$( "#content" ).tabs({
+		cache: true,
+		tabTemplate: "<li><a href='#{href}'>#{label}</a><span class='ui-icon ui-icon-close'>Remove Tab</span></li>",
+		add: function( event, ui ) {
+			var li = $(ui.tab).parent();
+			var index = $('#content li').index(li.get(0));
+			$( "#content span.ui-icon-close" ).click(function(){
+				$( "#content" ).tabs( "remove", index );
+			});
+		},
+		load : function (event, ui){
+            var path = $("#content li:eq("+ui.index+")").data("path")
+            var pnl = $(ui.panel);
+            if ((path) && (pnl.find('iframe').length == 0)) {
+	            pnl.empty();
+                $('<iframe />').attr({
+                    frameborder: '0',
+                    scrolling: 'no',
+                    src: path
+                })
+                .appendTo(pnl)
+                .load(function() {      // IFRAME resize code
+                    $(this).height($(this).contents().find("body").height()*1.05);
+                    $(this).width($("#content").width()*0.95);
+                });
+            }
+		}
+	});
+});
+</script>
+</head>
+<body>
+<div id="wrap">
+	<a href="security/login.jsp">login</a>
+	<a href="security/j_spring_security_logout">logout</a>
+	<div class="treeDiv">
+		<ul id="tree" class="ztree"></ul>
+	</div>
+	<div id="content" class="contentDiv">
+		<ul>
+			<li><a href="#welcome">welcome</a></li>
+		</ul>
+		<div id="welcome">welcome</div>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="base">
+
+	<select id="total" resultType="int">
+		select count(*) from ${table}
+	</select>
+	<select id="get" resultType="map">
+		select * from ${table} where ${idColumn} = #{id}
+	</select>
+	<select id="findAll" resultType="map">
+		select * from ${table}
+	</select>
+	<select id="findByProperty" resultType="map">
+		select * from ${table} where ${column} = #{val}
+	</select>
+	<select id="findByProperties" resultType="map">
+		select * from ${table}
+		<where>
+			<foreach item="item" collection="conditions" separator=" and ">
+				#{item.key} = #{item.value}
+			</foreach>
+		</where>
+	</select>
+	<select id="findInProperties" resultType="map">
+		select * from ${table}
+		<where>
+			${column} in 
+			<foreach item="item" collection="vals" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</where>
+	</select>
+	<select id="countByProperty" resultType="int">
+		select count(*) from ${table} where ${column} = #{val}
+	</select>
+	<select id="countByProperties" resultType="int">
+		select count(*) from ${table}
+		<where>
+			<foreach item="item" collection="conditions" separator=" and ">
+				#{item.key} = #{item.value}
+			</foreach>
+		</where>
+	</select>
+	<select id="countInProperties" resultType="int">
+		select count(*) from ${table}
+		<where>
+			${column} in 
+			<foreach item="item" collection="vals" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</where>
+	</select>
+
+	<insert id="save">
+		insert into ${table} 
+		<foreach item="item" collection="columns" open="("
+			separator="," close=")">
+			${item}
+		</foreach>
+		values
+		<foreach item="item" collection="vals" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</insert>
+	<update id="update">
+		update ${table}
+		<set>
+			<foreach item="item" collection="sets" separator=",">
+				${item.key} = #{item.value}
+			</foreach>
+		</set>
+		<where>
+			${idColumn} = #{id}
+		</where>
+	</update>
+	<delete id="delete">
+		delete from ${table}
+		<where>
+			${idColumn} = #{id}
+		</where>
+	</delete>
+
+	<delete id="deleteByProperty">
+		delete from ${table}
+		<where>
+			${column} = #{val}
+		</where>
+	</delete>
+	<delete id="deleteByProperties">
+		delete from ${table}
+		<where>
+			<foreach item="item" collection="conditions" separator=" and ">
+				#{item.key} = #{item.value}
+			</foreach>
+		</where>
+	</delete>
+	<delete id="deleteInProperties">
+		delete from ${table}
+		<where>
+			${column} = #{val}
+		</where>
+	</delete>
+
+</mapper>

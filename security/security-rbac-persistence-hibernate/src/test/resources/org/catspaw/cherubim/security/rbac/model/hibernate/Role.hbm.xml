@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class
+		name="org.catspaw.cherubim.security.rbac.model.hibernate.RoleModelHibernate"
+		entity-name="Role" table="rbac_role">
+		<id name="id" type="string" length="36" />
+		<property name="name" type="string" />
+		<property name="code" type="string" />
+		<set name="permissions" table="rbac_role_permission">
+			<key column="role_id" />
+			<many-to-many column="permission_id" entity-name="Permission" />
+		</set>
+	</class>
+	<query name="findRolesByUserId">
+		<![CDATA[
+		select elements(u.roles) from User u where u.id = ?
+		]]>
+	</query>
+	<query name="findRolesByUsername">
+		<![CDATA[
+		select elements(u.roles) from User u where u.username = ?
+		]]>
+	</query>
+</hibernate-mapping>
